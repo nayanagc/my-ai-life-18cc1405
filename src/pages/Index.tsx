@@ -8,6 +8,7 @@ import { Brain, LogOut } from "lucide-react";
 import ChatInterface from "@/components/ChatInterface";
 import Dashboard from "@/components/Dashboard";
 import MoodTracker from "@/components/MoodTracker";
+import AvatarSettings from "@/components/AvatarSettings";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -55,10 +56,11 @@ const Index = () => {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="chat" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="chat">AI Twin Chat</TabsTrigger>
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="mood">Mood Tracker</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
           <TabsContent value="chat" className="mt-0">
             <ChatInterface userId={user.id} />
@@ -68,6 +70,9 @@ const Index = () => {
           </TabsContent>
           <TabsContent value="mood" className="mt-0">
             <MoodTracker userId={user.id} />
+          </TabsContent>
+          <TabsContent value="settings" className="mt-0">
+            <AvatarSettings userId={user.id} />
           </TabsContent>
         </Tabs>
       </main>

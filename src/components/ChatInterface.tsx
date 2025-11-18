@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Send } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -15,12 +16,24 @@ const ChatInterface = ({ userId }: { userId: string }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [aiAvatar, setAiAvatar] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     loadMessages();
+    loadProfile();
   }, [userId]);
+
+  const loadProfile = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("ai_avatar_url")
+      .eq("id", userId)
+      .single();
+    
+    if (data?.ai_avatar_url) setAiAvatar(data.ai_avatar_url);
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -74,7 +87,13 @@ const ChatInterface = ({ userId }: { userId: string }) => {
     <Card className="flex flex-col h-[calc(100vh-16rem)] border-primary/20">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg, i) => (
-          <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+          <div key={i} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+            {msg.role === "assistant" && (
+              <Avatar className="h-8 w-8 border-2 border-primary">
+                <AvatarImage src={aiAvatar} alt="AI Twin" />
+                <AvatarFallback>AI</AvatarFallback>
+              </Avatar>
+            )}
             <div className={`max-w-[80%] rounded-lg p-3 ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
               {msg.content}
             </div>
