@@ -71,28 +71,34 @@ export type Database = {
       insights: {
         Row: {
           actionable: boolean | null
+          confidence_score: number | null
           created_at: string | null
           description: string
           id: string
           insight_type: string
+          prediction_date: string | null
           title: string
           user_id: string
         }
         Insert: {
           actionable?: boolean | null
+          confidence_score?: number | null
           created_at?: string | null
           description: string
           id?: string
           insight_type: string
+          prediction_date?: string | null
           title: string
           user_id: string
         }
         Update: {
           actionable?: boolean | null
+          confidence_score?: number | null
           created_at?: string | null
           description?: string
           id?: string
           insight_type?: string
+          prediction_date?: string | null
           title?: string
           user_id?: string
         }
@@ -130,6 +136,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          ai_avatar_url: string | null
           avatar_url: string | null
           created_at: string | null
           id: string
@@ -137,6 +144,7 @@ export type Database = {
           username: string | null
         }
         Insert: {
+          ai_avatar_url?: string | null
           avatar_url?: string | null
           created_at?: string | null
           id: string
@@ -144,6 +152,7 @@ export type Database = {
           username?: string | null
         }
         Update: {
+          ai_avatar_url?: string | null
           avatar_url?: string | null
           created_at?: string | null
           id?: string
