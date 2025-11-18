@@ -34,7 +34,13 @@ const ChatInterface = ({ userId }: { userId: string }) => {
       .order("created_at", { ascending: true })
       .limit(50);
     
-    if (data) setMessages(data);
+    if (data) {
+      const typedMessages: Message[] = data.map(msg => ({
+        role: msg.role as "user" | "assistant",
+        content: msg.content
+      }));
+      setMessages(typedMessages);
+    }
   };
 
   const sendMessage = async () => {
