@@ -10,7 +10,6 @@ import { useToast } from "@/components/ui/use-toast";
 interface Message {
   role: "user" | "assistant";
   content: string;
-  audioUrl?: string;
 }
 
 const ChatInterface = ({ userId }: { userId: string }) => {
@@ -130,28 +129,13 @@ const ChatInterface = ({ userId }: { userId: string }) => {
       if (error) throw error;
 
       const responseText = data.response;
-      let audioUrl: string | undefined;
 
-      if (voiceEnabled) {
-        const { data: audioData, error: audioError } = await supabase.functions.invoke("text-to-speech", {
-          body: { text: responseText, voice: "alloy" }
-        });
-
-        if (!audioError && audioData?.audioContent) {
-          const audioBlob = new Blob(
-            [Uint8Array.from(atob(audioData.audioContent), c => c.charCodeAt(0))],
-            { type: 'audio/mp3' }
-          );
-          audioUrl = URL.createObjectURL(audioBlob);
-        }
-      }
-
-      const assistantMessage: Message = { role: "assistant", content: responseText, audioUrl };
+      const assistantMessage: Message = { role: "assistant", content: responseText };
       setMessages(prev => [...prev, assistantMessage]);
       await supabase.from("chat_messages").insert({ user_id: userId, role: "assistant", content: responseText });
 
-      if (audioUrl && voiceEnabled) {
-        playAudio(audioUrl);
+      if (voiceEnabled) {
+        speakText(responseText);
       }
     } catch (error) {
       toast({ title: "Error", description: "Failed to get response", variant: "destructive" });
@@ -160,11 +144,38 @@ const ChatInterface = ({ userId }: { userId: string }) => {
     }
   };
 
-  const playAudio = (audioUrl: string) => {
-    const audio = new Audio(audioUrl);
-    setCurrentlyPlaying(audioUrl);
-    audio.play();
-    audio.onended = () => setCurrentlyPlaying(null);
+  const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      
+      // Try to use a natural-sounding voice
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = voices.find(voice => 
+        voice.name.includes('Google') || 
+        voice.name.includes('Natural') ||
+        voice.lang.startsWith('en')
+      );
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+
+      utterance.onstart = () => setCurrentlyPlaying(text);
+      utterance.onend = () => setCurrentlyPlaying(null);
+      utterance.onerror = () => {
+        setCurrentlyPlaying(null);
+        toast({ title: "Speech Error", description: "Failed to play voice response", variant: "destructive" });
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } else {
+      toast({ title: "Not Supported", description: "Text-to-speech not available in this browser", variant: "destructive" });
+    }
   };
 
   return (
@@ -192,16 +203,16 @@ const ChatInterface = ({ userId }: { userId: string }) => {
               <div className={`rounded-lg p-3 ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
                 {msg.content}
               </div>
-              {msg.audioUrl && msg.role === "assistant" && (
+              {msg.role === "assistant" && voiceEnabled && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => playAudio(msg.audioUrl!)}
-                  disabled={currentlyPlaying === msg.audioUrl}
+                  onClick={() => speakText(msg.content)}
+                  disabled={currentlyPlaying === msg.content}
                   className="self-start"
                 >
                   <Volume2 className="h-3 w-3 mr-1" />
-                  {currentlyPlaying === msg.audioUrl ? "Playing..." : "Play"}
+                  {currentlyPlaying === msg.content ? "Speaking..." : "Replay"}
                 </Button>
               )}
             </div>
