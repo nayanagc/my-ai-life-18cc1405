@@ -42,10 +42,14 @@ const AvatarSettings = ({ userId }: { userId: string }) => {
   };
 
   const presetAvatars = [
-    "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400",
-    "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=400",
-    "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400",
-    "https://images.unsplash.com/photo-1676277791608-ac54525aa94d?w=400"
+    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
+    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
+    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400",
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400",
+    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400",
+    "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400"
   ];
 
   return (
@@ -72,15 +76,15 @@ const AvatarSettings = ({ userId }: { userId: string }) => {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Quick Presets</label>
+        <label className="text-sm font-medium">Human Avatar Presets</label>
         <div className="grid grid-cols-4 gap-4">
           {presetAvatars.map((url, i) => (
             <Avatar
               key={i}
-              className="h-16 w-16 cursor-pointer border-2 hover:border-primary transition-all"
+              className="h-16 w-16 cursor-pointer border-2 hover:border-primary transition-all hover:scale-110"
               onClick={() => setAiAvatarUrl(url)}
             >
-              <AvatarImage src={url} alt={`Preset ${i + 1}`} />
+              <AvatarImage src={url} alt={`Human ${i + 1}`} />
             </Avatar>
           ))}
         </div>
