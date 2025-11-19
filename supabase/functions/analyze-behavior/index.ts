@@ -83,7 +83,12 @@ Format your response as JSON with this structure:
     });
 
     const aiData = await aiResponse.json();
-    const analysis = JSON.parse(aiData.choices[0].message.content);
+    let content = aiData.choices[0].message.content;
+    
+    // Remove markdown code fences if present
+    content = content.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+    
+    const analysis = JSON.parse(content);
 
     // Store behavior patterns
     const patternInserts = analysis.patterns.map((p: any) => ({
