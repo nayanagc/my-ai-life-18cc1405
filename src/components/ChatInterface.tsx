@@ -62,62 +62,53 @@ const ChatInterface = ({ userId }: { userId: string }) => {
     }
   };
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        await processAudioInput(audioBlob);
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-      toast({ title: "Recording", description: "Speak now..." });
-    } catch (error) {
-      toast({ title: "Error", description: "Failed to access microphone", variant: "destructive" });
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
+  const handleVoiceInput = () => {
+    if (isRecording) {
+      // Stop recording (browser recognition handles its own stopping)
       setIsRecording(false);
+      return;
     }
+    
+    // Use browser's built-in speech recognition (free, no API needed)
+    startBrowserRecognition();
   };
 
-  const processAudioInput = async (audioBlob: Blob) => {
-    setLoading(true);
-    try {
-      const reader = new FileReader();
-      reader.readAsDataURL(audioBlob);
-      reader.onloadend = async () => {
-        const base64Audio = (reader.result as string).split(',')[1];
-        
-        const { data: transcriptData, error: transcriptError } = await supabase.functions.invoke("speech-to-text", {
-          body: { audio: base64Audio }
-        });
-
-        if (transcriptError) throw transcriptError;
-
-        const transcribedText = transcriptData.text;
-        setInput(transcribedText);
-        await sendMessage(transcribedText);
-      };
-    } catch (error) {
-      toast({ title: "Error", description: "Failed to transcribe audio", variant: "destructive" });
-      setLoading(false);
+  const startBrowserRecognition = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      toast({ title: "Not Supported", description: "Speech recognition not available in this browser", variant: "destructive" });
+      return;
     }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+      toast({ title: "Listening", description: "Speak now..." });
+    };
+
+    recognition.onresult = async (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+      setIsRecording(false);
+      await sendMessage(transcript);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      setIsRecording(false);
+      toast({ title: "Error", description: `Speech recognition failed: ${event.error}`, variant: "destructive" });
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognition.start();
   };
 
   const sendMessage = async (messageText?: string) => {
@@ -222,8 +213,9 @@ const ChatInterface = ({ userId }: { userId: string }) => {
         <Button
           variant={isRecording ? "destructive" : "secondary"}
           size="icon"
-          onClick={isRecording ? stopRecording : startRecording}
+          onClick={handleVoiceInput}
           disabled={loading}
+          title="Click to speak"
         >
           <Mic className={`h-4 w-4 ${isRecording ? 'animate-pulse' : ''}`} />
         </Button>
