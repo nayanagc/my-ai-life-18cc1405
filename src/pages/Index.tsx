@@ -8,6 +8,7 @@ import { Brain, LogOut } from "lucide-react";
 import ChatInterface from "@/components/ChatInterface";
 import Dashboard from "@/components/Dashboard";
 import MoodTracker from "@/components/MoodTracker";
+import MoodTrendsChart from "@/components/MoodTrendsChart";
 import AvatarSettings from "@/components/AvatarSettings";
 
 const Index = () => {
@@ -69,7 +70,10 @@ const Index = () => {
             <Dashboard userId={user.id} />
           </TabsContent>
           <TabsContent value="mood" className="mt-0">
-            <MoodTracker userId={user.id} />
+            <div className="space-y-6">
+              <MoodTracker userId={user.id} />
+              <MoodTrendsChart userId={user.id} />
+            </div>
           </TabsContent>
           <TabsContent value="settings" className="mt-0">
             <AvatarSettings userId={user.id} />

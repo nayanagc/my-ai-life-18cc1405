@@ -60,14 +60,36 @@ const Dashboard = ({ userId }: { userId: string }) => {
     }
   };
 
+  const clearPredictions = async () => {
+    try {
+      const { error } = await supabase
+        .from("insights")
+        .delete()
+        .eq("user_id", userId)
+        .eq("insight_type", "prediction");
+
+      if (error) throw error;
+
+      toast({ title: "Predictions Cleared", description: "All future predictions have been removed." });
+      await loadData();
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to clear predictions", variant: "destructive" });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Your Insights</h2>
-        <Button onClick={runAnalysis} disabled={analyzing}>
-          <Brain className="h-4 w-4 mr-2" />
-          {analyzing ? "Analyzing..." : "Analyze Behavior"}
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={clearPredictions}>
+            Clear Predictions
+          </Button>
+          <Button onClick={runAnalysis} disabled={analyzing}>
+            <Brain className="h-4 w-4 mr-2" />
+            {analyzing ? "Analyzing..." : "Analyze Behavior"}
+          </Button>
+        </div>
       </div>
       
       <div className="grid gap-4 md:grid-cols-3">

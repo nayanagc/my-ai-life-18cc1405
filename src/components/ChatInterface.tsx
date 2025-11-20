@@ -158,18 +158,27 @@ const ChatInterface = ({ userId }: { userId: string }) => {
       // Cancel any ongoing speech
       window.speechSynthesis.cancel();
       
+      // Load user voice preferences
+      const voiceGender = localStorage.getItem(`voice_gender_${userId}`) || "female";
+      const speechRate = parseFloat(localStorage.getItem(`speech_rate_${userId}`) || "1.0");
+      
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 1.0;
+      utterance.rate = speechRate;
       utterance.pitch = 1.0;
       utterance.volume = 1.0;
       
-      // Try to use a natural-sounding voice
+      // Get available voices and select based on gender preference
       const voices = window.speechSynthesis.getVoices();
-      const preferredVoice = voices.find(voice => 
-        voice.name.includes('Google') || 
-        voice.name.includes('Natural') ||
-        voice.lang.startsWith('en')
-      );
+      const preferredVoice = voices.find(voice => {
+        const voiceName = voice.name.toLowerCase();
+        if (voiceGender === "female") {
+          return voiceName.includes('female') || voiceName.includes('woman') || 
+                 (voiceName.includes('google') && !voiceName.includes('male'));
+        } else {
+          return voiceName.includes('male') || voiceName.includes('man');
+        }
+      });
+      
       if (preferredVoice) {
         utterance.voice = preferredVoice;
       }

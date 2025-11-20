@@ -6,14 +6,20 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
 import { Sparkles } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
 
 const AvatarSettings = ({ userId }: { userId: string }) => {
   const [aiAvatarUrl, setAiAvatarUrl] = useState("");
+  const [voiceGender, setVoiceGender] = useState("female");
+  const [speechRate, setSpeechRate] = useState([1.0]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     loadProfile();
+    loadVoiceSettings();
   }, [userId]);
 
   const loadProfile = async () => {
@@ -24,6 +30,13 @@ const AvatarSettings = ({ userId }: { userId: string }) => {
       .single();
     
     if (data?.ai_avatar_url) setAiAvatarUrl(data.ai_avatar_url);
+  };
+
+  const loadVoiceSettings = () => {
+    const savedVoice = localStorage.getItem(`voice_gender_${userId}`) || "female";
+    const savedRate = localStorage.getItem(`speech_rate_${userId}`) || "1.0";
+    setVoiceGender(savedVoice);
+    setSpeechRate([parseFloat(savedRate)]);
   };
 
   const saveAvatar = async () => {
@@ -39,6 +52,12 @@ const AvatarSettings = ({ userId }: { userId: string }) => {
       toast({ title: "Success", description: "AI avatar updated!" });
     }
     setLoading(false);
+  };
+
+  const saveVoiceSettings = () => {
+    localStorage.setItem(`voice_gender_${userId}`, voiceGender);
+    localStorage.setItem(`speech_rate_${userId}`, speechRate[0].toString());
+    toast({ title: "Voice Settings Saved", description: "Your voice preferences have been updated!" });
   };
 
   const presetAvatars = [
@@ -93,6 +112,41 @@ const AvatarSettings = ({ userId }: { userId: string }) => {
       <Button onClick={saveAvatar} disabled={loading} className="w-full">
         Save Avatar
       </Button>
+
+      <div className="pt-6 border-t space-y-4">
+        <h3 className="text-lg font-semibold">Voice Settings</h3>
+        
+        <div className="space-y-2">
+          <Label>Voice Personality</Label>
+          <Select value={voiceGender} onValueChange={setVoiceGender}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="female">Female Voice</SelectItem>
+              <SelectItem value="male">Male Voice</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Speech Rate: {speechRate[0].toFixed(1)}x</Label>
+          <Slider 
+            value={speechRate} 
+            onValueChange={setSpeechRate} 
+            min={0.5} 
+            max={2.0} 
+            step={0.1}
+          />
+          <p className="text-xs text-muted-foreground">
+            Adjust how fast the AI speaks (0.5x = slower, 2.0x = faster)
+          </p>
+        </div>
+
+        <Button onClick={saveVoiceSettings} variant="outline" className="w-full">
+          Save Voice Settings
+        </Button>
+      </div>
     </Card>
   );
 };
