@@ -134,6 +134,45 @@ export type Database = {
         }
         Relationships: []
       }
+      music_recommendations: {
+        Row: {
+          artist: string
+          created_at: string | null
+          genre: string | null
+          id: string
+          mood: string
+          reason: string | null
+          song_title: string
+          spotify_url: string | null
+          user_id: string
+          youtube_url: string | null
+        }
+        Insert: {
+          artist: string
+          created_at?: string | null
+          genre?: string | null
+          id?: string
+          mood: string
+          reason?: string | null
+          song_title: string
+          spotify_url?: string | null
+          user_id: string
+          youtube_url?: string | null
+        }
+        Update: {
+          artist?: string
+          created_at?: string | null
+          genre?: string | null
+          id?: string
+          mood?: string
+          reason?: string | null
+          song_title?: string
+          spotify_url?: string | null
+          user_id?: string
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           ai_avatar_url: string | null
@@ -158,6 +197,30 @@ export type Database = {
           id?: string
           updated_at?: string | null
           username?: string | null
+        }
+        Relationships: []
+      }
+      songs_generated: {
+        Row: {
+          created_at: string | null
+          id: string
+          lyrics: string
+          mood: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          lyrics: string
+          mood: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          lyrics?: string
+          mood?: string
+          user_id?: string
         }
         Relationships: []
       }

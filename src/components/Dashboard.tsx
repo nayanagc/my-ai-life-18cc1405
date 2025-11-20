@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { Brain, TrendingUp, Zap, Calendar } from "lucide-react";
+import MusicRecommendations from "./MusicRecommendations";
 
 interface BehaviorPattern {
   id: string;
@@ -122,6 +123,8 @@ const Dashboard = ({ userId }: { userId: string }) => {
           <p className="text-sm text-muted-foreground">Average accuracy</p>
         </Card>
       </div>
+
+      <MusicRecommendations userId={userId} />
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="p-6 border-primary/20">

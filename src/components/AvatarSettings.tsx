@@ -58,9 +58,23 @@ const AvatarSettings = ({
     }
     setLoading(false);
   };
-  const saveVoiceSettings = () => {
+  const saveVoiceSettings = async () => {
     localStorage.setItem(`voice_gender_${userId}`, voiceGender);
     localStorage.setItem(`speech_rate_${userId}`, speechRate[0].toString());
+    
+    // Trigger user style analysis every 10 saves
+    const analyzeCount = parseInt(localStorage.getItem('analyzeCount') || '0');
+    if (analyzeCount % 10 === 0) {
+      try {
+        await supabase.functions.invoke('analyze-user-style', {
+          body: { userId }
+        });
+      } catch (error) {
+        console.error('Error analyzing user style:', error);
+      }
+    }
+    localStorage.setItem('analyzeCount', (analyzeCount + 1).toString());
+    
     toast({
       title: "Voice Settings Saved",
       description: "Your voice preferences have been updated!"
