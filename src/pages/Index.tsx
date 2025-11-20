@@ -10,43 +10,41 @@ import Dashboard from "@/components/Dashboard";
 import MoodTracker from "@/components/MoodTracker";
 import MoodTrendsChart from "@/components/MoodTrendsChart";
 import AvatarSettings from "@/components/AvatarSettings";
-
 const Index = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({
+      data: {
+        session
+      }
+    }) => {
       setUser(session?.user ?? null);
       if (!session) navigate("/auth");
       setLoading(false);
     });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: {
+        subscription
+      }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (!session) navigate("/auth");
     });
-
     return () => subscription.unsubscribe();
   }, [navigate]);
-
   const handleSignOut = async () => {
     await supabase.auth.signOut();
   };
-
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   if (!user) return null;
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+  return <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <header className="border-b border-border/50 backdrop-blur-sm bg-card/95 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Brain className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              AI Life Double
-            </h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Twinova AI    </h1>
           </div>
           <Button variant="ghost" size="sm" onClick={handleSignOut}>
             <LogOut className="h-4 w-4 mr-2" />
@@ -80,8 +78,6 @@ const Index = () => {
           </TabsContent>
         </Tabs>
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;

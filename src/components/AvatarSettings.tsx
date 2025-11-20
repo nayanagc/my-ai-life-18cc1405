@@ -9,73 +9,68 @@ import { Sparkles } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
-
-const AvatarSettings = ({ userId }: { userId: string }) => {
+const AvatarSettings = ({
+  userId
+}: {
+  userId: string;
+}) => {
   const [aiAvatarUrl, setAiAvatarUrl] = useState("");
   const [voiceGender, setVoiceGender] = useState("female");
   const [speechRate, setSpeechRate] = useState([1.0]);
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   useEffect(() => {
     loadProfile();
     loadVoiceSettings();
   }, [userId]);
-
   const loadProfile = async () => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("ai_avatar_url")
-      .eq("id", userId)
-      .single();
-    
+    const {
+      data
+    } = await supabase.from("profiles").select("ai_avatar_url").eq("id", userId).single();
     if (data?.ai_avatar_url) setAiAvatarUrl(data.ai_avatar_url);
   };
-
   const loadVoiceSettings = () => {
     const savedVoice = localStorage.getItem(`voice_gender_${userId}`) || "female";
     const savedRate = localStorage.getItem(`speech_rate_${userId}`) || "1.0";
     setVoiceGender(savedVoice);
     setSpeechRate([parseFloat(savedRate)]);
   };
-
   const saveAvatar = async () => {
     setLoading(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ ai_avatar_url: aiAvatarUrl })
-      .eq("id", userId);
-
+    const {
+      error
+    } = await supabase.from("profiles").update({
+      ai_avatar_url: aiAvatarUrl
+    }).eq("id", userId);
     if (error) {
-      toast({ title: "Error", description: "Failed to update avatar", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to update avatar",
+        variant: "destructive"
+      });
     } else {
-      toast({ title: "Success", description: "AI avatar updated!" });
+      toast({
+        title: "Success",
+        description: "AI avatar updated!"
+      });
     }
     setLoading(false);
   };
-
   const saveVoiceSettings = () => {
     localStorage.setItem(`voice_gender_${userId}`, voiceGender);
     localStorage.setItem(`speech_rate_${userId}`, speechRate[0].toString());
-    toast({ title: "Voice Settings Saved", description: "Your voice preferences have been updated!" });
+    toast({
+      title: "Voice Settings Saved",
+      description: "Your voice preferences have been updated!"
+    });
   };
-
-  const presetAvatars = [
-    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
-    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
-    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400",
-    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400",
-    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400",
-    "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400"
-  ];
-
-  return (
-    <Card className="p-6 space-y-6">
+  const presetAvatars = ["https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400", "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400", "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400", "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400", "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400", "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400", "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400", "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400"];
+  return <Card className="p-6 space-y-6">
       <div className="flex items-center gap-3">
         <Sparkles className="h-6 w-6 text-primary" />
-        <h2 className="text-2xl font-bold">AI Twin Avatar</h2>
+        <h2 className="text-2xl font-bold">               Twinova AI Avatar    </h2>
       </div>
 
       <div className="flex justify-center">
@@ -87,25 +82,15 @@ const AvatarSettings = ({ userId }: { userId: string }) => {
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Avatar URL</label>
-        <Input
-          value={aiAvatarUrl}
-          onChange={(e) => setAiAvatarUrl(e.target.value)}
-          placeholder="Enter image URL..."
-        />
+        <Input value={aiAvatarUrl} onChange={e => setAiAvatarUrl(e.target.value)} placeholder="Enter image URL..." />
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Human Avatar Presets</label>
         <div className="grid grid-cols-4 gap-4">
-          {presetAvatars.map((url, i) => (
-            <Avatar
-              key={i}
-              className="h-16 w-16 cursor-pointer border-2 hover:border-primary transition-all hover:scale-110"
-              onClick={() => setAiAvatarUrl(url)}
-            >
+          {presetAvatars.map((url, i) => <Avatar key={i} className="h-16 w-16 cursor-pointer border-2 hover:border-primary transition-all hover:scale-110" onClick={() => setAiAvatarUrl(url)}>
               <AvatarImage src={url} alt={`Human ${i + 1}`} />
-            </Avatar>
-          ))}
+            </Avatar>)}
         </div>
       </div>
 
@@ -131,13 +116,7 @@ const AvatarSettings = ({ userId }: { userId: string }) => {
 
         <div className="space-y-2">
           <Label>Speech Rate: {speechRate[0].toFixed(1)}x</Label>
-          <Slider 
-            value={speechRate} 
-            onValueChange={setSpeechRate} 
-            min={0.5} 
-            max={2.0} 
-            step={0.1}
-          />
+          <Slider value={speechRate} onValueChange={setSpeechRate} min={0.5} max={2.0} step={0.1} />
           <p className="text-xs text-muted-foreground">
             Adjust how fast the AI speaks (0.5x = slower, 2.0x = faster)
           </p>
@@ -147,8 +126,6 @@ const AvatarSettings = ({ userId }: { userId: string }) => {
           Save Voice Settings
         </Button>
       </div>
-    </Card>
-  );
+    </Card>;
 };
-
 export default AvatarSettings;
