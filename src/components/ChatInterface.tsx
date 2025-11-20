@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Send, Mic, Volume2, VolumeX } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import SongButton from "./SongButton";
 interface Message {
   role: "user" | "assistant";
   content: string;
@@ -286,6 +287,17 @@ const ChatInterface = ({
         <Button onClick={() => sendMessage()} disabled={loading || isRecording}>
           <Send className="h-4 w-4" />
         </Button>
+        <SongButton 
+          userId={userId} 
+          onSongGenerated={(lyrics) => {
+            const songMessage: Message = {
+              role: 'assistant',
+              content: `🎵 Here's a song just for you! 🎵\n\n${lyrics}`
+            };
+            setMessages(prev => [...prev, songMessage]);
+            speakText(lyrics);
+          }} 
+        />
       </div>
     </Card>
     </div>;

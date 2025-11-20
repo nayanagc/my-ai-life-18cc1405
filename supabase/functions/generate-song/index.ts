@@ -11,24 +11,11 @@ serve(async (req) => {
   }
 
   try {
-    const { message, userId } = await req.json();
+    const { mood, userName } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
-    // Enhanced emoji guidelines with mood-based selection
-    const emojiGuidelines = `Use emojis naturally in EVERY response (1-2 per response):
-- Happy/Joyful: 😊 😄 ✨ 🎉 💫 🌟
-- Calm/Peaceful: 😌 🕊️ 💙 ☮️ 🌸 💆
-- Stressed/Anxious: 🫂 💚 🌿 🧘 💆 🌱
-- Tired/Sleepy: 😴 💤 🛌 ☕ 🌙 ⭐
-- Energetic/Excited: ⚡ 🔥 💪 🎯 🚀 ⚡
-- Encouraging: 💪 👏 🌟 💯 🎯 🙌
-- Empathetic/Caring: 🤗 💕 🫶 ❤️ 🥰 💝
-
-Place emojis naturally to emphasize emotion and key points. Match emoji energy to message tone.`;
-
-    // Build adaptive system prompt
-    const basePrompt = `You are an AI twin that learns from the user. Be empathetic and insightful. Keep your responses SHORT and SMART - answer in 1-3 sentences maximum (20-60 words). Be conversational, not formal. ${emojiGuidelines} Help them understand their patterns quickly without lengthy explanations.`;
-
+    const userNamePart = userName ? `, ${userName}` : '';
+    
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -38,14 +25,22 @@ Place emojis naturally to emphasize emotion and key points. Match emoji energy t
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         messages: [
-          { role: 'system', content: basePrompt },
-          { role: 'user', content: message }
+          { 
+            role: 'system', 
+            content: `You are a musical AI twin. Create a short, personalized 4-8 line song with rhyming structure based on the user's mood. Make it encouraging, lovely, and emotionally resonant. Include emojis naturally (1-2 per line). Keep it simple and heartfelt. Output ONLY the song lyrics, no other text.` 
+          },
+          { 
+            role: 'user', 
+            content: `Create a personalized song for someone${userNamePart} who is feeling ${mood}. Make it uplifting and supportive.` 
+          }
         ],
       }),
     });
 
     const data = await response.json();
-    return new Response(JSON.stringify({ response: data.choices[0].message.content }), {
+    const lyrics = data.choices[0].message.content;
+
+    return new Response(JSON.stringify({ lyrics }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
