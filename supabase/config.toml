@@ -73,3 +73,12 @@ verify_jwt = false
 
 [functions.speech-to-text]
 verify_jwt = false
+
+[functions.generate-song]
+verify_jwt = false
+
+[functions.get-music-recommendations]
+verify_jwt = false
+
+[functions.analyze-user-style]
+verify_jwt = false
