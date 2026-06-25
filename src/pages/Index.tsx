@@ -10,6 +10,7 @@ import Dashboard from "@/components/Dashboard";
 import MoodTracker from "@/components/MoodTracker";
 import MoodTrendsChart from "@/components/MoodTrendsChart";
 import AvatarSettings from "@/components/AvatarSettings";
+import CareerHub from "@/components/CareerHub";
 
 const GUEST_ID = "guest-user";
 
@@ -61,14 +62,18 @@ const Index = () => {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="chat" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsList className="grid w-full grid-cols-5 mb-6">
             <TabsTrigger value="chat">AI Twin Chat</TabsTrigger>
+            <TabsTrigger value="career">Career</TabsTrigger>
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="mood">Mood Tracker</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
           <TabsContent value="chat" className="mt-0">
             <ChatInterface userId={userId} />
+          </TabsContent>
+          <TabsContent value="career" className="mt-0">
+            <CareerHub userId={userId} isGuest={!user} />
           </TabsContent>
           <TabsContent value="dashboard" className="mt-0">
             <Dashboard userId={userId} />
