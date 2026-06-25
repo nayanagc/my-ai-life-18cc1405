@@ -82,3 +82,9 @@ verify_jwt = false
 
 [functions.analyze-user-style]
 verify_jwt = false
+
+[functions.generate-roadmap]
+verify_jwt = false
+
+[functions.generate-weekly-plan]
+verify_jwt = false

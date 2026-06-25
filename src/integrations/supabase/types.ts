@@ -44,6 +44,48 @@ export type Database = {
         }
         Relationships: []
       }
+      career_profiles: {
+        Row: {
+          created_at: string
+          education_level: string | null
+          id: string
+          interests: string[]
+          notes: string | null
+          present_role: string | null
+          skills: string[]
+          target_role: string | null
+          updated_at: string
+          user_id: string
+          weekly_hours: number
+        }
+        Insert: {
+          created_at?: string
+          education_level?: string | null
+          id?: string
+          interests?: string[]
+          notes?: string | null
+          present_role?: string | null
+          skills?: string[]
+          target_role?: string | null
+          updated_at?: string
+          user_id: string
+          weekly_hours?: number
+        }
+        Update: {
+          created_at?: string
+          education_level?: string | null
+          id?: string
+          interests?: string[]
+          notes?: string | null
+          present_role?: string | null
+          skills?: string[]
+          target_role?: string | null
+          updated_at?: string
+          user_id?: string
+          weekly_hours?: number
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string
@@ -100,6 +142,42 @@ export type Database = {
           insight_type?: string
           prediction_date?: string | null
           title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      learning_roadmaps: {
+        Row: {
+          created_at: string
+          generated_at: string
+          id: string
+          milestones: Json
+          skill_gaps: Json
+          summary: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          generated_at?: string
+          id?: string
+          milestones?: Json
+          skill_gaps?: Json
+          summary?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          generated_at?: string
+          id?: string
+          milestones?: Json
+          skill_gaps?: Json
+          summary?: string | null
+          title?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -260,6 +338,42 @@ export type Database = {
           title?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      weekly_action_plans: {
+        Row: {
+          created_at: string
+          generated_at: string
+          id: string
+          nudge: string | null
+          plan: Json
+          progress: Json
+          updated_at: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          generated_at?: string
+          id?: string
+          nudge?: string | null
+          plan?: Json
+          progress?: Json
+          updated_at?: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          generated_at?: string
+          id?: string
+          nudge?: string | null
+          plan?: Json
+          progress?: Json
+          updated_at?: string
+          user_id?: string
+          week_start?: string
         }
         Relationships: []
       }
